@@ -1,6 +1,6 @@
 import express, { Application, NextFunction, Request, Response } from 'express'
 import dotenv from 'dotenv'
-import mongoose, { CallbackError } from 'mongoose'
+import mongoose from 'mongoose'
 
 import indexRouter from './routes/index.route'
 import authRouter from './routes/auth.route'
@@ -32,9 +32,14 @@ function setupRoutes (app: Application) {
   app.use(manageError)
 }
 
-function manageError (error: Error | CallbackError, req: Request, res: Response, next: NextFunction) {
-  console.log(error?.message)
-  res.status(500).json({ message: error?.message })
+function manageError (error: Error | unknown, req: Request, res: Response, next: NextFunction) {
+  if (error instanceof Error && error.message) {
+    console.log(error.message)
+    res.status(500).json({ message: 'ERROR : ' + error.message })
+  } else {
+    console.log(error)
+    res.status(500).json({ message: 'An error has occured' })
+  }
 }
 
 function startApplication (app: Application) {
