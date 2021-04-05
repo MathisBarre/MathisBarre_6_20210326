@@ -20,7 +20,7 @@ function setupConfiguration (app: Application): void {
   const prettyError = new PrettyError()
   prettyError.start()
 
-  const dbOptions = { useNewUrlParser: true, useUnifiedTopology: true }
+  const dbOptions = { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true }
   const dbUrl = process.env.DB_URL?.toString() ?? 'null'
   mongoose.connect(dbUrl, dbOptions)
     .then(() => { console.log('💿 The application is connected to MongoDB Altas !') })
