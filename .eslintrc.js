@@ -15,5 +15,7 @@ module.exports = {
     '@typescript-eslint'
   ],
   rules: {
+    // Personal preference(s)
+    '@typescript-eslint/no-unused-vars': 'warn'
   }
 }
