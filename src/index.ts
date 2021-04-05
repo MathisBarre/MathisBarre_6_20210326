@@ -2,6 +2,7 @@ import express, { Application, NextFunction, Request, Response } from 'express'
 import dotenv from 'dotenv'
 import PrettyError from 'pretty-error'
 import mongoose from 'mongoose'
+import cors from 'cors'
 
 import indexRouter from './routes/index.route'
 import authRouter from './routes/auth.route'
@@ -28,6 +29,7 @@ function setupConfiguration (app: Application): void {
 }
 
 function setupMiddleware (app: Application): void {
+  app.use(cors())
   app.use(express.json())
 }
 

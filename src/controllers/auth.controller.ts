@@ -41,8 +41,8 @@ export async function login (req: Request, res: Response, next: NextFunction): P
       )
 
       res.json({
-        message: 'Access allowed',
-        jwtToken
+        userId: userInDB._id,
+        token: jwtToken
       })
     } else {
       res.status(401).json({
