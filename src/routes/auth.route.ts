@@ -1,4 +1,4 @@
-import Router from 'express-promise-router'
+import { Router } from 'express'
 import { signup, login } from '../controllers/auth.controller'
 
 export default Router()
