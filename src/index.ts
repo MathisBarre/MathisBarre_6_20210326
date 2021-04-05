@@ -1,5 +1,6 @@
 import express, { Application, NextFunction, Request, Response } from 'express'
 import dotenv from 'dotenv'
+import PrettyError from 'pretty-error'
 import mongoose from 'mongoose'
 
 import indexRouter from './routes/index.route'
@@ -15,6 +16,10 @@ import authRouter from './routes/auth.route'
 
 function setupConfiguration (app: Application) {
   dotenv.config()
+
+  const prettyError = new PrettyError()
+  prettyError.start()
+
   const dbOptions = { useNewUrlParser: true, useUnifiedTopology: true }
   const dbUrl = process.env.DB_URL?.toString() ?? 'null'
   mongoose.connect(dbUrl, dbOptions)
@@ -34,7 +39,7 @@ function setupRoutes (app: Application) {
 
 function manageError (error: Error | unknown, req: Request, res: Response, next: NextFunction) {
   if (error instanceof Error && error.message) {
-    console.log(error.message)
+    console.log(error)
     res.status(500).json({ message: 'ERROR : ' + error.message })
   } else {
     console.log(error)
