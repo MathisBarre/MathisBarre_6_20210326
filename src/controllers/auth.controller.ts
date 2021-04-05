@@ -1,5 +1,6 @@
 import { Response, Request, NextFunction } from 'express'
 import bcrypt from 'bcrypt'
+import jwt from 'jsonwebtoken'
 import User from '../models/user.model'
 
 export async function signup (req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -33,9 +34,15 @@ export async function login (req: Request, res: Response, next: NextFunction): P
     const thePasswordsMatch = await bcrypt.compare(passwordInRequest, hashedPasswordInDB)
 
     if (thePasswordsMatch) {
+      const jwtToken = jwt.sign(
+        { userId: userInDB._id },
+        process.env.JWT_PRIVATE_KEY ?? '987default68468secret6487key159',
+        { expiresIn: '4h' }
+      )
+
       res.json({
         message: 'Access allowed',
-        jwtToken: 's57df5qs7dfqsdf57qsdf.6qsd7fqs87df8sq7df8'
+        jwtToken
       })
     } else {
       res.status(401).json({
