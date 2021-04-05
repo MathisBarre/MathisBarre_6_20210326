@@ -2,8 +2,8 @@ import { Schema, model, Document, Model } from 'mongoose'
 import uniqueValidator from 'mongoose-unique-validator'
 
 export interface Iuser extends Document {
-  userId: string,
-  email: string,
+  _id: string
+  email: string
   password: string
 }
 

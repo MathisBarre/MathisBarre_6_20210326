@@ -14,7 +14,7 @@ import authRouter from './routes/auth.route'
   startApplication(app)
 })()
 
-function setupConfiguration (app: Application) {
+function setupConfiguration (app: Application): void {
   dotenv.config()
 
   const prettyError = new PrettyError()
@@ -27,18 +27,18 @@ function setupConfiguration (app: Application) {
     .catch(error => { console.error(error) })
 }
 
-function setupMiddleware (app: Application) {
+function setupMiddleware (app: Application): void {
   app.use(express.json())
 }
 
-function setupRoutes (app: Application) {
+function setupRoutes (app: Application): void {
   app.use('/', indexRouter)
   app.use('/api/auth', authRouter)
   app.use(manageError)
 }
 
-function manageError (error: Error | unknown, req: Request, res: Response, next: NextFunction) {
-  if (error instanceof Error && error.message) {
+function manageError (error: Error | unknown, req: Request, res: Response, next: NextFunction): void {
+  if (error instanceof Error && error.message.length > 0) {
     console.log(error)
     res.status(500).json({ message: 'ERROR : ' + error.message })
   } else {
@@ -47,7 +47,7 @@ function manageError (error: Error | unknown, req: Request, res: Response, next:
   }
 }
 
-function startApplication (app: Application) {
+function startApplication (app: Application): void {
   const port = process.env.APP_PORT ?? 3000
   const message = `🚀 The application is launched on http://localhost:${port}`
   app.listen(port, () => { console.log(message) })

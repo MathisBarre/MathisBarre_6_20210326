@@ -4,10 +4,10 @@ module.exports = {
     node: true
   },
   extends: [
-    'standard'
+    'standard-with-typescript'
   ],
-  parser: '@typescript-eslint/parser',
   parserOptions: {
+    project: './tsconfig.json',
     ecmaVersion: 12,
     sourceType: 'module'
   },
