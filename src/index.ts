@@ -32,7 +32,7 @@ function setupConfiguration (app: Application): void {
 function setupMiddleware (app: Application): void {
   app.use(cors())
   app.use(express.json())
-  app.use(express.urlencoded({ extended: true }))
+  app.use(express.static('public'))
 }
 
 function setupRoutes (app: Application): void {
