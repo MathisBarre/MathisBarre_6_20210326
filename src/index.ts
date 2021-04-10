@@ -6,6 +6,7 @@ import cors from 'cors'
 
 import indexRouter from './routes/index.route'
 import authRouter from './routes/auth.route'
+import saucesRouter from './routes/sauces.route'
 
 (() => {
   const app = express()
@@ -31,11 +32,13 @@ function setupConfiguration (app: Application): void {
 function setupMiddleware (app: Application): void {
   app.use(cors())
   app.use(express.json())
+  app.use(express.urlencoded({ extended: true }))
 }
 
 function setupRoutes (app: Application): void {
   app.use('/', indexRouter)
   app.use('/api/auth', authRouter)
+  app.use('/api/sauces', saucesRouter)
   app.use(manageError)
 }
 

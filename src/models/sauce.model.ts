@@ -1,7 +1,7 @@
 import { Schema, model, Document, Model } from 'mongoose'
 import uniqueValidator from 'mongoose-unique-validator'
 
-export interface ISauce extends Document {
+export interface Isauce extends Document {
   _id: string
   userId: string
   name: string
@@ -32,6 +32,6 @@ const sauceSchema = new Schema({
 
 sauceSchema.plugin(uniqueValidator)
 
-const Sauce: Model<ISauce> = model('Sauce', sauceSchema)
+const Sauce: Model<Isauce> = model('Sauce', sauceSchema)
 
 export default Sauce
