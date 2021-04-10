@@ -24,8 +24,7 @@ export async function login (req: Request, res: Response, next: NextFunction): P
 
     if (userInDB === null || userInDB.password === null) {
       res.status(401).json({
-        message: 'Access denied : no account is linked to this email address',
-        message_FR: 'Accès réfusé : aucun compte n\'est lié à cette adresse e-mail'
+        message: 'Access denied : no account is linked to this email address'
       })
       return
     }
@@ -46,8 +45,7 @@ export async function login (req: Request, res: Response, next: NextFunction): P
       })
     } else {
       res.status(401).json({
-        message: 'Access denied : bad password',
-        message_FR: 'Accès refusé : mauvais mot de passe'
+        message: 'Access denied : bad password'
       })
     }
   } catch (error) {
