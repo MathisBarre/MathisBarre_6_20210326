@@ -3,6 +3,7 @@ import dotenv from 'dotenv'
 import PrettyError from 'pretty-error'
 import mongoose from 'mongoose'
 import cors from 'cors'
+import path from 'path'
 
 import indexRouter from './routes/index.route'
 import authRouter from './routes/auth.route'
@@ -32,7 +33,7 @@ function setupConfiguration (app: Application): void {
 function setupMiddleware (app: Application): void {
   app.use(cors())
   app.use(express.json())
-  app.use(express.static('public'))
+  app.use(express.static(path.join(__dirname, 'public')))
 }
 
 function setupRoutes (app: Application): void {
