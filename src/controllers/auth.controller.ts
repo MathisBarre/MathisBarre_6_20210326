@@ -18,7 +18,6 @@ export async function signup (req: Request, res: Response, next: NextFunction): 
 export async function login (req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
     const emailInRequest: string = req.body.email
-    const passwordInRequest: string = req.body.password
 
     const userInDB = await User.findOne({ email: emailInRequest })
 
@@ -29,6 +28,7 @@ export async function login (req: Request, res: Response, next: NextFunction): P
       return
     }
 
+    const passwordInRequest: string = req.body.password
     const hashedPasswordInDB = userInDB.password
     const thePasswordsMatch = await bcrypt.compare(passwordInRequest, hashedPasswordInDB)
 
