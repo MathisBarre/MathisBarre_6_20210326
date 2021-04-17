@@ -25,8 +25,7 @@ export async function getOne (req: Request, res: Response, next: NextFunction): 
 export async function createOne (req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
     const sauceInRequest = JSON.parse(req.body.sauce)
-    const newlyUploadedImagePath = path.join(req.file.destination, req.file.filename).replace('src\\public', '')
-    const backendBaseUrl = `${req.protocol}://${req.get('host') ?? ''}`
+    const newlyUploadedImagePath = 'http://localhost:3000/uploads/images/sauces/' + req.file.filename
     console.log(newlyUploadedImagePath)
 
     await Sauces.create({
@@ -35,7 +34,7 @@ export async function createOne (req: Request, res: Response, next: NextFunction
       manufacturer: sauceInRequest.manufacturer,
       description: sauceInRequest.description,
       mainPepper: sauceInRequest.mainPepper,
-      imageUrl: path.join(backendBaseUrl, newlyUploadedImagePath).replace('/\\/g', '/'),
+      imageUrl: newlyUploadedImagePath,
       heat: sauceInRequest.heat
     })
 
