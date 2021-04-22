@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import { Router } from 'express'
 import multer from 'multer'
-import { getAll, getOne, createOne, deleteOne } from '../controllers/sauces.controller'
+import { getAll, getOne, createOne, manageLike, updateSauce, deleteOne } from '../controllers/sauces.controller'
 
 const upload = multer({
   storage: multer.diskStorage({
@@ -16,4 +16,6 @@ export default Router()
   .get('/', getAll)
   .get('/:id', getOne)
   .post('/', upload.single('image'), createOne)
+  .post('/:id/like', manageLike)
+  .put('/:id', upload.single('image'), updateSauce)
   .delete('/:id', deleteOne)

@@ -2,7 +2,7 @@ import { Schema, model, Document, Model } from 'mongoose'
 import uniqueValidator from 'mongoose-unique-validator'
 
 export interface Isauce extends Document {
-  _id: string
+  _id?: string
   userId: string
   name: string
   manufacturer: string
@@ -10,10 +10,10 @@ export interface Isauce extends Document {
   mainPepper: string
   imageUrl: string
   heat: number
-  likes: number
-  dislikes: number
-  usersLiked: string[]
-  usersDisliked: string[]
+  likes?: number
+  dislikes?: number
+  usersLiked?: string[]
+  usersDisliked?: string[]
 }
 
 const sauceSchema = new Schema({
