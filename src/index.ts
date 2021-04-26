@@ -34,6 +34,13 @@ function setupMiddleware (app: Application): void {
   app.use(cors())
   app.use(express.json())
   app.use(express.static(path.join(__dirname, 'public')))
+  app.use(routeLogger)
+}
+
+function routeLogger (req: Request, res: Response, next: NextFunction): void {
+  console.log(`${req.method} ${req.url}`)
+  if (req.body !== {}) console.log(req.body)
+  next()
 }
 
 function setupRoutes (app: Application): void {

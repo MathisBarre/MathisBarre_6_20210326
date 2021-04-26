@@ -1,5 +1,5 @@
 import { Response, Request, NextFunction } from 'express'
-import Sauces from '../models/sauce.model'
+import Sauces, { Isauce } from '../models/sauce.model'
 
 export async function getAll (req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
@@ -43,30 +43,96 @@ export async function createOne (req: Request, res: Response, next: NextFunction
 }
 
 export async function manageLike (req: Request, res: Response, next: NextFunction): Promise<void> {
-  const likeState = { '-1': 'dislike', 0: 'neutral', 1: 'like' }[req.body.like as -1 | 0 | 1]
-  const sauceId = req.params.id
-  const userId = req.body.userId
+  try {
+    const likeState = { '-1': 'dislike', 0: 'neutral', 1: 'like' }[req.body.like as -1 | 0 | 1]
+    const sauceId = req.params.id
+    const userId = req.body.userId
 
-  if (likeState === 'dislike') {
-    await saveThatUserDontLikeTheSauce(sauceId, userId)
-  } else if (likeState === 'neutral') {
-    await saveThatUserDontCareAboutTheSauce(sauceId, userId)
-  } else if (likeState === 'like') {
-    await saveThatUserLoveTheSauce(sauceId, userId)
+    const sauce = await Sauces.findById(sauceId)
+    if (sauce === null) throw new Error("The sauce id that you to update doesn't exist")
+
+    let funcResponse
+    if (likeState === 'dislike') {
+      funcResponse = await saveThatUserDontLikeTheSauce(sauceId, userId, sauce)
+    } else if (likeState === 'neutral') {
+      funcResponse = await saveThatUserDontCareAboutTheSauce(sauceId, userId, sauce)
+    } else if (likeState === 'like') {
+      funcResponse = await saveThatUserLoveTheSauce(sauceId, userId, sauce)
+    }
+
+    const modifiedSauce = funcResponse?.modifiedSauce
+    if (modifiedSauce === undefined) throw new Error('Sauce like or dislike failed, modifiedSauce is undefined')
+    const messageStatus = funcResponse?.messageStatus
+    await modifiedSauce.save()
+
+    res.json({ message: (messageStatus?.length > 0) ? messageStatus : 'The like has been processed successfully' })
+  } catch (error) {
+    next(error)
   }
 }
 
-async function saveThatUserDontLikeTheSauce (sauceId: string, userId: string): Promise<void> {
-  const findedSauce = await Sauces.findById(sauceId)
-  console.log(findedSauce)
+async function saveThatUserDontLikeTheSauce (sauceId: string, userId: string, sauce: Isauce): Promise<{messageStatus: string, modifiedSauce: Isauce}> {
+  let messageStatus = ''
+
+  const likerIndex = sauce.usersLiked.indexOf(sauceId)
+  const userActuallyLikeTheSauce = likerIndex > -1
+  if (userActuallyLikeTheSauce) {
+    sauce.usersLiked.splice(likerIndex, 1)
+    sauce.likes -= 1
+    messageStatus += 'Remove old like. '
+  }
+
+  const userActuallyDislikeSauce = sauce.usersDisliked.includes(userId)
+  if (!userActuallyDislikeSauce) {
+    sauce.usersLiked.push(userId)
+    sauce.dislikes += 1
+    messageStatus += 'Add new dislike. '
+  }
+
+  return { messageStatus: messageStatus, modifiedSauce: sauce }
 }
 
-async function saveThatUserDontCareAboutTheSauce (sauceId: string, userId: string): Promise<void> {
+async function saveThatUserDontCareAboutTheSauce (sauceId: string, userId: string, sauce: Isauce): Promise<{messageStatus: string, modifiedSauce: Isauce}> {
+  let messageStatus = ''
 
+  const dislikerIndex = sauce.usersDisliked.indexOf(sauceId)
+  const userActuallyDislikeSauce = dislikerIndex > -1
+  if (userActuallyDislikeSauce) {
+    sauce.usersDisliked.splice(dislikerIndex, 1)
+    sauce.dislikes -= 1
+    messageStatus += 'Remove old dislike. '
+  }
+
+  const loverIndex = sauce.usersLiked.indexOf(sauceId)
+  const userActuallyLikeTheSauce = loverIndex > -1
+  if (userActuallyLikeTheSauce) {
+    sauce.usersLiked.splice(loverIndex, 1)
+    sauce.likes -= 1
+    messageStatus += 'Remove old like. '
+  }
+
+  return { messageStatus: messageStatus, modifiedSauce: sauce }
 }
 
-async function saveThatUserLoveTheSauce (sauceId: string, userId: string): Promise<void> {
+async function saveThatUserLoveTheSauce (sauceId: string, userId: string, sauce: Isauce): Promise<{messageStatus: string, modifiedSauce: Isauce}> {
+  let messageStatus = ''
 
+  const dislikersIndex = sauce.usersDisliked.indexOf(sauceId)
+  const userActuallyDislikeSauce = dislikersIndex > -1
+  if (userActuallyDislikeSauce) {
+    sauce.usersDisliked.splice(dislikersIndex, 1)
+    sauce.likes -= 1
+    messageStatus += 'Remove old dislike. '
+  }
+
+  const userActuallyLikeTheSauce = sauce.usersLiked.includes(userId)
+  if (!userActuallyLikeTheSauce) {
+    sauce.usersLiked.push(userId)
+    sauce.likes += 1
+    messageStatus += 'Add new like. '
+  }
+
+  return { messageStatus: messageStatus, modifiedSauce: sauce }
 }
 
 export async function updateSauce (req: Request, res: Response, next: NextFunction): Promise<void> {

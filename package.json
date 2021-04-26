@@ -5,7 +5,8 @@
   "main": "index.ts",
   "scripts": {
     "start": "ts-node src/index.ts",
-    "start:dev": "set DEBUG=express:* & nodemon --watch src/** --ext ts,json --exec ts-node src/index.ts"
+    "start:dev": "nodemon --watch src/** --ext ts,json --exec ts-node src/index.ts",
+    "start:debug": "set DEBUG=express:* & nodemon --watch src/** --ext ts,json --exec ts-node src/index.ts"
   },
   "repository": {
     "type": "git",
