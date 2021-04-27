@@ -65,7 +65,7 @@ export async function manageLike (req: Request, res: Response, next: NextFunctio
     const messageStatus = funcResponse?.messageStatus
     await modifiedSauce.save()
 
-    res.json({ message: (messageStatus?.length > 0) ? messageStatus : 'The like has been processed successfully' })
+    res.json({ message: 'The like has been processed successfully' })
   } catch (error) {
     next(error)
   }
@@ -85,7 +85,7 @@ async function saveThatUserDontLikeTheSauce (sauceId: string, userId: string, sa
   const userActuallyDislikeSauce = sauce.usersDisliked.includes(userId)
   if (!userActuallyDislikeSauce) {
     sauce.usersLiked.push(userId)
-    sauce.dislikes += 1
+    sauce.dislikes++
     messageStatus += 'Add new dislike. '
   }
 
@@ -128,7 +128,7 @@ async function saveThatUserLoveTheSauce (sauceId: string, userId: string, sauce:
   const userActuallyLikeTheSauce = sauce.usersLiked.includes(userId)
   if (!userActuallyLikeTheSauce) {
     sauce.usersLiked.push(userId)
-    sauce.likes += 1
+    sauce.likes++
     messageStatus += 'Add new like. '
   }
 
