@@ -46,15 +46,50 @@ export async function manageLike (req: Request, res: Response, next: NextFunctio
   try {
     const likeState = { '-1': 'dislike', 0: 'neutral', 1: 'like' }[req.body.like as -1 | 0 | 1]
     const sauceId = req.params.id
-    const userId = req.body.userId
+    const userId: string = req.body.userId
 
     const sauce = await Sauces.findById(sauceId)
     if (sauce === null) throw new Error("The sauce id that you to update doesn't exist")
 
-    res.json({ message: 'The like has been processed successfully' })
+    const userLikeTheSauce = likeState === 'like'
+    const userDontLikeTheSauce = likeState === 'dislike'
+
+    let message: string = 'Nothing as been done'
+    if (userLikeTheSauce) message = await addLike(sauce, userId)
+    else if (userDontLikeTheSauce) await addDislike(sauce, userId)
+    // else if ( userDontCareAboutTheSauce ) removeUserFromLikeAndDislike(sauceId, userId)
+    else { throw new Error('Nothing has been done') }
+
+    res.json({ message: message })
   } catch (error) {
     next(error)
   }
+}
+
+async function addLike (sauce: Isauce, userId: string): Promise<string> {
+  const userAlreadyLikeTheSauce = sauce.usersLiked.find((element) => element === userId) !== undefined
+
+  if (!userAlreadyLikeTheSauce) {
+    sauce.usersLiked.push(userId)
+    sauce.likes++
+    await sauce.save()
+    return 'Like has been added'
+  }
+
+  return 'The user already like the sauce'
+}
+
+async function addDislike (sauce: Isauce, userId: string): Promise<string> {
+  const userAlreadyDislikeTheSauce = sauce.usersDisliked.find((element) => element === userId) !== undefined
+
+  if (!userAlreadyDislikeTheSauce) {
+    sauce.usersDisliked.push(userId)
+    sauce.dislikes++
+    await sauce.save()
+    return 'Dislike has been added'
+  }
+
+  return 'The user already dislike the sauce'
 }
 
 export async function updateSauce (req: Request, res: Response, next: NextFunction): Promise<void> {
