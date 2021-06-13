@@ -53,11 +53,12 @@ export async function manageLike (req: Request, res: Response, next: NextFunctio
 
     const userLikeTheSauce = likeState === 'like'
     const userDontLikeTheSauce = likeState === 'dislike'
+    const userDontCareAboutTheSauce = likeState === 'neutral'
 
     let message: string = 'Nothing as been done'
     if (userLikeTheSauce) message = await addLike(sauce, userId)
-    else if (userDontLikeTheSauce) await addDislike(sauce, userId)
-    // else if ( userDontCareAboutTheSauce ) removeUserFromLikeAndDislike(sauceId, userId)
+    else if (userDontLikeTheSauce) message = await addDislike(sauce, userId)
+    else if (userDontCareAboutTheSauce) message = await removeUserFromLikeAndDislike(sauce, userId)
     else { throw new Error('Nothing has been done') }
 
     res.json({ message: message })
@@ -90,6 +91,29 @@ async function addDislike (sauce: Isauce, userId: string): Promise<string> {
   }
 
   return 'The user already dislike the sauce'
+}
+
+async function removeUserFromLikeAndDislike (sauce: Isauce, userId: string): Promise<string> {
+  const loverIndex = sauce.usersLiked.indexOf(userId)
+  const userLikeTheSauce = loverIndex !== -1
+  const haterIndex = sauce.usersDisliked.indexOf(userId)
+  const userDislikeTheSauce = haterIndex !== -1
+
+  if (userLikeTheSauce) {
+    sauce.likes--
+    sauce.usersLiked.splice(loverIndex, 1)
+    await sauce.save()
+    return 'A like as been removed'
+  }
+
+  if (userDislikeTheSauce) {
+    sauce.dislikes--
+    sauce.usersDisliked.splice(haterIndex, 1)
+    await sauce.save()
+    return 'A dislike as been removed'
+  }
+
+  return 'There was no like or dislike to remove, nothing as been done'
 }
 
 export async function updateSauce (req: Request, res: Response, next: NextFunction): Promise<void> {
