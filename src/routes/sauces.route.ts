@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import { Router } from 'express'
 import multer from 'multer'
+import auth from '../middleware/auth.middleware'
 import { getAll, getOne, createOne, manageLike, updateSauce, deleteOne } from '../controllers/sauces.controller'
 
 const upload = multer({
@@ -13,9 +14,9 @@ const upload = multer({
 })
 
 export default Router()
-  .get('/', getAll)
-  .get('/:id', getOne)
-  .post('/', upload.single('image'), createOne)
-  .post('/:id/like', manageLike)
-  .put('/:id', upload.single('image'), updateSauce)
-  .delete('/:id', deleteOne)
+  .get('/', auth, getAll)
+  .get('/:id', auth, getOne)
+  .post('/', auth, upload.single('image'), createOne)
+  .post('/:id/like', auth, manageLike)
+  .put('/:id', auth, upload.single('image'), updateSauce)
+  .delete('/:id', auth, deleteOne)
