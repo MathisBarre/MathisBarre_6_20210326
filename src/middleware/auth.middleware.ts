@@ -15,7 +15,7 @@ export default function (req: Request, res: Response, next: NextFunction): void 
     else next()
   } catch (error) {
     res.status(401).json({
-      message: error ?? 'Authorization denied'
+      message: error.message ?? 'Authorization denied'
     })
   }
 }
